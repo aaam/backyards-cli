@@ -290,12 +290,10 @@ func (c *backyardsCLI) withHealthCheck(ep endpoint.Endpoint) (endpoint.Endpoint,
 	client.RetryWaitMax = time.Millisecond * 100
 	client.RetryMax = 5
 	client.Logger = hclog.NewNullLogger()
-	level := hclog.Info
 	if logrus.IsLevelEnabled(logrus.DebugLevel) {
-		level = hclog.Debug
 		client.Logger = hclog.New(&hclog.LoggerOptions{
 			Name:   "health check",
-			Level:  level,
+			Level:  hclog.Debug,
 			Output: c.rootCmd.ErrOrStderr(),
 		})
 	}

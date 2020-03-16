@@ -143,7 +143,7 @@ func (c *installCommand) run(cli cli.CLI, options *InstallOptions) error {
 				question = fmt.Sprintf("Istio is already installed with name '%s'. Do you want to upgrade it?",
 					*existingIstioCRName)
 			} else {
-				question = fmt.Sprintf("Istio is already installed. Do you want to upgrade it?")
+				question = "Istio is already installed. Do you want to upgrade it?"
 			}
 
 			confirmed := false
@@ -156,7 +156,7 @@ func (c *installCommand) run(cli cli.CLI, options *InstallOptions) error {
 			}
 		} else if isExternalIstioCR && nameDiffers {
 			if options.Force {
-				fmt.Fprintln(os.Stderr, fmt.Sprintf("Upgrading Istio named '%s'.", *existingIstioCRName))
+				fmt.Fprintf(os.Stderr, "Upgrading Istio named '%s'.", *existingIstioCRName)
 			} else {
 				return errors.New(
 					fmt.Sprintf("Istio is already installed with name '%s' which is different than '%s' found in '%s'. Cannot proceed with Istio upgrade.",
