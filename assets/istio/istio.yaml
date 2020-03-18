@@ -4,7 +4,8 @@ metadata:
   name: mesh
 spec:
   version: "1.5.0"
-  mtls: false
+  meshPolicy:
+    mtlsMode: PERMISSIVE
   autoMtls: true
   meshExpansion: true
   controlPlaneSecurityEnabled: true
