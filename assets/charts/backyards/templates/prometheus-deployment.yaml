@@ -13,6 +13,7 @@ metadata:
     app.kubernetes.io/version: {{ .Chart.AppVersion | replace "+" "_" }}
     app.kubernetes.io/component: prometheus
     app.kubernetes.io/part-of: {{ include "backyards.name" . }}
+    backyards.banzaicloud.io/cluster-name: {{ .Values.prometheus.clusterName }}
 spec:
   replicas: {{ .Values.prometheus.replicas }}
   selector:
@@ -21,6 +22,7 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}
       app.kubernetes.io/component: prometheus
       app.kubernetes.io/part-of: {{ include "backyards.name" . }}
+      backyards.banzaicloud.io/cluster-name: {{ .Values.prometheus.clusterName }}
   template:
     metadata:
       annotations:
@@ -35,6 +37,7 @@ spec:
         app.kubernetes.io/version: {{ .Chart.AppVersion | replace "+" "_" }}
         app.kubernetes.io/component: prometheus
         app.kubernetes.io/part-of: {{ include "backyards.name" . }}
+        backyards.banzaicloud.io/cluster-name: {{ .Values.prometheus.clusterName }}
     spec:
       serviceAccountName: {{ include "prometheus.fullname" . }}
       volumes:
@@ -95,11 +98,11 @@ spec:
         imagePullPolicy: {{ .Values.prometheus.image.pullPolicy }}
         args:
         - "--storage.tsdb.path=/data"
-        - "--storage.tsdb.retention.time=6h"
+        - "--storage.tsdb.retention.time={{ .Values.prometheus.retentionTime }}"
         - "--config.file=/etc/prometheus/prometheus.yml"
         - "--log.level=info"
         - "--web.external-url={{ .Values.prometheus.externalUrl }}"
-        - --web.enable-lifecycle
+        - "--web.enable-lifecycle"
         readinessProbe:
           httpGet:
             path: {{ .Values.prometheus.externalUrl }}/-/ready
