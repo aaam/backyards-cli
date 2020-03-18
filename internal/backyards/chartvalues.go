@@ -87,11 +87,12 @@ type Values struct {
 	} `json:"istio,omitempty"`
 
 	Prometheus struct {
-		Enabled     bool                        `json:"enabled,omitempty"`
-		Image       helm.Image                  `json:"image,omitempty"`
-		Resources   corev1.ResourceRequirements `json:"resources,omitempty"`
-		ExternalURL string                      `json:"externalUrl,omitempty"`
-		Config      struct {
+		Enabled       bool                        `json:"enabled,omitempty"`
+		Image         helm.Image                  `json:"image,omitempty"`
+		Resources     corev1.ResourceRequirements `json:"resources,omitempty"`
+		ExternalURL   string                      `json:"externalUrl,omitempty"`
+		RetentionTime string                      `json:"retentionTime,omitempty"`
+		Config        struct {
 			Global struct {
 				ScrapeInterval     string `json:"scrapeInterval,omitempty"`
 				ScrapeTimeout      string `json:"scrapeTimeout,omitempty"`

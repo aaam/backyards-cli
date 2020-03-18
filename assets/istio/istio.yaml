@@ -83,3 +83,5 @@ spec:
   istiod:
     enabled: true
   jwtPolicy: first-party-jwt
+  mixerlessTelemetry:
+    enabled: false

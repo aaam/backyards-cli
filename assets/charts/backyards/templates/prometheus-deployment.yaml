@@ -98,11 +98,11 @@ spec:
         imagePullPolicy: {{ .Values.prometheus.image.pullPolicy }}
         args:
         - "--storage.tsdb.path=/data"
-        - "--storage.tsdb.retention.time=6h"
+        - "--storage.tsdb.retention.time={{ .Values.prometheus.retentionTime }}"
         - "--config.file=/etc/prometheus/prometheus.yml"
         - "--log.level=info"
         - "--web.external-url={{ .Values.prometheus.externalUrl }}"
-        - --web.enable-lifecycle
+        - "--web.enable-lifecycle"
         readinessProbe:
           httpGet:
             path: {{ .Values.prometheus.externalUrl }}/-/ready

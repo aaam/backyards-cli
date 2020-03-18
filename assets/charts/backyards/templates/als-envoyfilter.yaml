@@ -3,7 +3,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
   name: als-metadata-fix
-  namespace: istio-system
+  namespace: {{ .Values.istio.namespace }}
 spec:
   configPatches:
   - applyTo: HTTP_FILTER
@@ -18,15 +18,29 @@ spec:
       value:
         config:
           inlineCode: |
-            function envoy_on_response(response_handle)
-              if response_handle:headers():get("x-envoy-peer-metadata") ~= nil then
-                response_handle:headers():add("x-by-metadata", response_handle:headers():get("x-envoy-peer-metadata"))
+            function envoy_on_request(handle)
+              if handle:headers():get("x-envoy-peer-metadata") ~= nil then
+                handle:headers():add("x-by-metadata", handle:headers():get("x-envoy-peer-metadata"))
               end
+
+              local headers = handle:headers()
+              for key, value in pairs(headers) do
+                handle:logCritical("Key: "..key..", value: "..value)
+                handle:streamInfo():dynamicMetadata():set("backyards", "request.header."..key, value)
+              end
+              handle:streamInfo():dynamicMetadata():set("backyards", "request.lua", "run")
             end
-            function envoy_on_request(request_handle)
-              if request_handle:headers():get("x-envoy-peer-metadata") ~= nil then
-                request_handle:headers():add("x-by-metadata", request_handle:headers():get("x-envoy-peer-metadata"))
+            function envoy_on_response(handle)
+              if handle:headers():get("x-envoy-peer-metadata") ~= nil then
+                handle:headers():add("x-by-metadata", handle:headers():get("x-envoy-peer-metadata"))
               end
+
+              local headers = handle:headers()
+              for key, value in pairs(headers) do
+                handle:logCritical("Key: "..key..", value: "..value)
+                handle:streamInfo():dynamicMetadata():set("backyards", "response.header."..key, value)
+              end
+              handle:streamInfo():dynamicMetadata():set("backyards", "response.lua", "run")
             end
         name: envoy.lua
 {{- end }}

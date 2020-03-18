@@ -180,9 +180,6 @@ func (c *installCommand) run(options *InstallOptions) error {
 	}
 
 	values, err := getValues(options.releaseName, options.istioNamespace, func(values *backyards.Values) {
-		values.Application.Image.Tag = "1.2.0-drilldown.1"
-		values.Web.Image.Tag = "1.2.0-drilldown.1"
-
 		if options.enableAuditSink {
 			values.AuditSink.Enabled = true
 		}
