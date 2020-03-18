@@ -11,6 +11,10 @@ spec:
   sidecarInjector:
     enabled: false
     rewriteAppHTTPProbe: true
+    injectedContainerAdditionalEnvVars:
+    - name: ISTIO_METAJSON_PLATFORM_METADATA
+      value: |
+        {"PLATFORM_METADATA":{"cluster_id":"master"}}
   imagePullPolicy: Always
   citadel:
     enabled: false
@@ -51,7 +55,7 @@ spec:
     maxReplicas: 1
     image: banzaicloud/istio-pilot:1.5.0-bzc
   proxy:
-    image: banzaicloud/istio-proxyv2:1.5.0-bzc
+    image: banzaicloud/istio-proxyv2:1.5.0-bzc.0
     useMetadataExchangeFilter: true
     envoyAccessLogService:
       enabled: true
@@ -68,7 +72,7 @@ spec:
     image: banzaicloud/istio-mixer:1.5.0-bzc
     multiClusterSupport: true
   telemetry:
-    enabled: true
+    enabled: false
     maxReplicas: 1
   policy:
     enabled: false
@@ -84,4 +88,4 @@ spec:
     enabled: true
   jwtPolicy: first-party-jwt
   mixerlessTelemetry:
-    enabled: false
+    enabled: true
