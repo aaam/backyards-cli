@@ -72,7 +72,7 @@ spec:
     image: banzaicloud/istio-mixer:1.5.0-bzc
     multiClusterSupport: true
   telemetry:
-    enabled: true
+    enabled: false
     maxReplicas: 1
   policy:
     enabled: false
@@ -88,4 +88,4 @@ spec:
     enabled: true
   jwtPolicy: first-party-jwt
   mixerlessTelemetry:
-    enabled: false
+    enabled: true
