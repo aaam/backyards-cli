@@ -15,7 +15,7 @@ metadata:
     app.kubernetes.io/part-of: {{ include "backyards.name" . }}
 spec:
   gateways:
-  - {{ include "tracing.fullname" . }}
+  - {{ .Values.istio.namespace }}/{{ include "tracing.fullname" . }}
   hosts:
   - "*"
   tcp:

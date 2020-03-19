@@ -3,7 +3,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
   name: {{ include "tracing.fullname" . }}
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ .Values.istio.namespace }}
   labels:
     app: {{ include "tracing.name" . }}
     app.kubernetes.io/name: {{ include "tracing.name" . }}
