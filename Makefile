@@ -120,7 +120,8 @@ bin/golangci-lint-${GOLANGCI_VERSION}:
 
 .PHONY: lint
 lint: bin/golangci-lint ## Run linter
-	bin/golangci-lint run
+	# "unused" linter is a memory hog, but running it separately keeps it contained (probably because of caching)
+	bin/golangci-lint run --disable=unused && bin/golangci-lint run
 
 .PHONY: lint-fix
 lint-fix: bin/golangci-lint ## Run linter
