@@ -56,7 +56,7 @@ spec:
     maxReplicas: 1
     image: banzaicloud/istio-pilot:1.5.0-bzc
   proxy:
-    image: banzaicloud/istio-proxyv2:1.5.0-bzc.0
+    image: banzaicloud/istio-proxyv2:1.5.0-bzc.1
     useMetadataExchangeFilter: true
     envoyAccessLogService:
       enabled: true
