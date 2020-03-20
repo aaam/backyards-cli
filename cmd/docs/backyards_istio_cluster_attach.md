@@ -13,6 +13,7 @@ backyards istio cluster attach [path-to-kubeconfig] [flags]
 ### Options
 
 ```
+      --force         Try to attach the cluster even if it is already attached
   -h, --help          help for attach
       --name string   Name override for the peer cluster
 ```

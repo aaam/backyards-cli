@@ -25,7 +25,6 @@ spec:
 
               local headers = handle:headers()
               for key, value in pairs(headers) do
-                handle:logCritical("Key: "..key..", value: "..value)
                 handle:streamInfo():dynamicMetadata():set("backyards", "request.header."..key, value)
               end
               handle:streamInfo():dynamicMetadata():set("backyards", "request.lua", "run")
@@ -37,7 +36,6 @@ spec:
 
               local headers = handle:headers()
               for key, value in pairs(headers) do
-                handle:logCritical("Key: "..key..", value: "..value)
                 handle:streamInfo():dynamicMetadata():set("backyards", "response.header."..key, value)
               end
               handle:streamInfo():dynamicMetadata():set("backyards", "response.lua", "run")

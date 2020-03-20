@@ -48,6 +48,7 @@ type attachCommand struct {
 
 type AttachOptions struct {
 	name           string
+	force          bool
 	kubeconfigPath string
 }
 
@@ -75,6 +76,7 @@ func NewAttachCommand(cli cli.CLI, options *AttachOptions) *cobra.Command {
 	}
 
 	cmd.Flags().StringVar(&options.name, "name", options.name, "Name override for the peer cluster")
+	cmd.Flags().BoolVar(&options.force, "force", options.force, "Try to attach the cluster even if it is already attached")
 
 	return cmd
 }
@@ -91,7 +93,7 @@ func (c *attachCommand) run(options *AttachOptions) error {
 		return errors.WrapIf(err, "could not get clusters")
 	}
 
-	err = c.confirmKubeconfig(options.kubeconfigPath)
+	err = ConfirmKubeconfig(c.cli, options.kubeconfigPath)
 	if err != nil {
 		return err
 	}
@@ -102,15 +104,17 @@ func (c *attachCommand) run(options *AttachOptions) error {
 	}
 
 	if options.name == "" {
-		options.name, err = c.getClusterNameFromKubeconfig(options.kubeconfigPath)
+		options.name, err = GetClusterNameFromKubeconfig(options.kubeconfigPath)
 		if err != nil {
 			return err
 		}
 	}
 
-	ok, _ := clusters.GetClusterByName(options.name)
-	if ok {
-		return errors.Errorf("peer cluster '%s' already exists", options.name)
+	if !options.force {
+		ok, _ := clusters.GetClusterByName(options.name)
+		if ok {
+			return errors.Errorf("peer cluster '%s' already exists", options.name)
+		}
 	}
 
 	ok, hostCluster := clusters.GetHostCluster()
@@ -231,7 +235,7 @@ func (c *attachCommand) installMonitoring(client k8sclient.Client, options *Atta
 	return nil
 }
 
-func (c *attachCommand) confirmKubeconfig(kubeconfigPath string) error {
+func ConfirmKubeconfig(cli cli.CLI, kubeconfigPath string) error {
 	config, err := k8sclient.GetRawConfig(kubeconfigPath, "")
 	if err != nil {
 		return errors.WrapIf(err, "could not get k8s config")
@@ -240,7 +244,7 @@ func (c *attachCommand) confirmKubeconfig(kubeconfigPath string) error {
 	message := fmt.Sprintf("Are you sure to use the following context? %s (API Server: %s)",
 		config.CurrentContext, config.Clusters[config.Contexts[config.CurrentContext].Cluster].Server)
 	confirmed := false
-	err = c.cli.IfConfirmed(message, func() error {
+	err = cli.IfConfirmed(message, func() error {
 		confirmed = true
 
 		return nil
@@ -256,7 +260,7 @@ func (c *attachCommand) confirmKubeconfig(kubeconfigPath string) error {
 	return nil
 }
 
-func (c *attachCommand) getClusterNameFromKubeconfig(kubeconfigPath string) (string, error) {
+func GetClusterNameFromKubeconfig(kubeconfigPath string) (string, error) {
 	rawk8sconfig, err := k8sclient.GetRawConfig(kubeconfigPath, "")
 	if err != nil {
 		return "", errors.WrapIf(err, "could not get k8s config")

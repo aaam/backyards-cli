@@ -18,11 +18,15 @@ import (
 	"fmt"
 
 	"emperror.dev/errors"
+	"github.com/MakeNowJust/heredoc"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"istio.io/operator/pkg/object"
 
 	cmdCommon "github.com/banzaicloud/backyards-cli/internal/cli/cmd/common"
 	"github.com/banzaicloud/backyards-cli/pkg/cli"
+	k8sclient "github.com/banzaicloud/backyards-cli/pkg/k8s/client"
+	"github.com/banzaicloud/backyards-cli/pkg/k8s/resourcemanager"
 )
 
 type detachCommand struct {
@@ -30,12 +34,15 @@ type detachCommand struct {
 }
 
 type DetachOptions struct {
-	name string
+	name           string
+	kubeconfigPath string
 }
 
 func NewDetachOptions() *DetachOptions {
 	return &DetachOptions{}
 }
+
+var namespacesOnPeerCluster = []string{"backyards-system", "istio-system"}
 
 func NewDetachCommand(cli cli.CLI, options *DetachOptions) *cobra.Command {
 	c := &detachCommand{
@@ -43,18 +50,20 @@ func NewDetachCommand(cli cli.CLI, options *DetachOptions) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:   "detach [name]",
+		Use:   "detach [kubeconfig]",
 		Args:  cobra.ExactArgs(1),
 		Short: "Detach peer cluster from the mesh",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cmd.SilenceErrors = true
 			cmd.SilenceUsage = true
 
-			options.name = args[0]
+			options.kubeconfigPath = args[0]
 
 			return c.run(options)
 		},
 	}
+
+	cmd.Flags().StringVar(&options.name, "name", options.name, "Name override for the peer cluster")
 
 	return cmd
 }
@@ -69,6 +78,28 @@ func (c *detachCommand) run(options *DetachOptions) error {
 	clusters, err := client.Clusters()
 	if err != nil {
 		return errors.WrapIf(err, "could not get clusters")
+	}
+
+	err = ConfirmKubeconfig(c.cli, options.kubeconfigPath)
+	if err != nil {
+		return err
+	}
+
+	k8sconfig, err := k8sclient.GetConfigWithContext(options.kubeconfigPath, "")
+	if err != nil {
+		return errors.WrapIf(err, "could not get k8s config")
+	}
+
+	k8sclient, err := k8sclient.NewClient(k8sconfig, k8sclient.Options{})
+	if err != nil {
+		return errors.WrapIf(err, "could not get k8s client")
+	}
+
+	if options.name == "" {
+		options.name, err = GetClusterNameFromKubeconfig(options.kubeconfigPath)
+		if err != nil {
+			return err
+		}
 	}
 
 	ok, peerCluster := clusters.GetClusterByName(options.name)
@@ -86,6 +117,40 @@ func (c *detachCommand) run(options *DetachOptions) error {
 			log.Infof("detaching peer cluster '%s' started successfully\n", options.name)
 		}
 
-		return nil
+		return c.removeNamespaces(k8sclient, namespacesOnPeerCluster)
 	})
+}
+
+func (c *detachCommand) removeNamespaces(client k8sclient.Client, namespace []string) error {
+	labelManager := c.cli.LabelManager()
+	m := resourcemanager.New(client, labelManager)
+
+	objs := make(object.K8sObjects, 0)
+	for _, ns := range namespace {
+		obj, err := getNamespaceObject(ns)
+		if err != nil {
+			return err
+		}
+		objs = append(objs, obj)
+	}
+
+	m.SetObjects(objs)
+
+	return m.Uninstall().Do()
+}
+
+func getNamespaceObject(namespace string) (*object.K8sObject, error) {
+	manifest := fmt.Sprintf(heredoc.Doc(`
+		apiVersion: v1
+		kind: Namespace
+		metadata:
+		  name: %s
+	`), namespace)
+
+	objs, err := object.ParseK8sObjectsFromYAMLManifest(manifest)
+	if err != nil {
+		return nil, err
+	}
+
+	return objs[0], nil
 }

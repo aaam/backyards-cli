@@ -2,9 +2,9 @@
 CHARTS_DIR=${1:-assets/charts}
 ASSETS_DIR="${2:-assets}"
 
-BACKYARDS_CHART_VERSION="1.2.5"
+BACKYARDS_CHART_VERSION="1.2.9"
 ISTIO_OPERATOR_CHART_VERSION="0.0.42"
-CANARY_OPERATOR_CHART_VERSION="0.1.9"
+CANARY_OPERATOR_CHART_VERSION="0.1.10"
 BACKYARDS_DEMO_CHART_VERSION="1.0.1"
 CERT_MANAGER_CHART_VERSION="v0.10.0"
 NODE_EXPORTER_CHART_VERSION="1.8.1"
@@ -20,6 +20,7 @@ CHARTS+=("https://kubernetes-charts.storage.googleapis.com/prometheus-node-expor
 CHARTS+=("https://charts.jetstack.io/charts/cert-manager-${CERT_MANAGER_CHART_VERSION}.tgz")
 
 for i in ${CHARTS[@]}; do
+    rm -rf "${CHARTS_DIR}/${i}"
     curl -s "${i}" | tar -zxv --directory "${CHARTS_DIR}/" -f -
     retVal=$?
     if [ $retVal -ne 0 ]; then
