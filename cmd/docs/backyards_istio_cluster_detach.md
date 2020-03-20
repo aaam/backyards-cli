@@ -7,13 +7,14 @@ Detach peer cluster from the mesh
 Detach peer cluster from the mesh
 
 ```
-backyards istio cluster detach [name] [flags]
+backyards istio cluster detach [kubeconfig] [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for detach
+  -h, --help          help for detach
+      --name string   Name override for the peer cluster
 ```
 
 ### Options inherited from parent commands
