@@ -34,7 +34,7 @@ type detachCommand struct {
 }
 
 type DetachOptions struct {
-	name string
+	name           string
 	kubeconfigPath string
 }
 
@@ -135,9 +135,8 @@ func (c *detachCommand) removeNamespaces(client k8sclient.Client, namespace []st
 	}
 
 	m.SetObjects(objs)
-	m.Uninstall().Do()
 
-	return nil
+	return m.Uninstall().Do()
 }
 
 func getNamespaceObject(namespace string) (*object.K8sObject, error) {
