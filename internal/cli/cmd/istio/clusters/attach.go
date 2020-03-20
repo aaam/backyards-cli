@@ -48,6 +48,7 @@ type attachCommand struct {
 
 type AttachOptions struct {
 	name           string
+	force          bool
 	kubeconfigPath string
 }
 
@@ -75,6 +76,7 @@ func NewAttachCommand(cli cli.CLI, options *AttachOptions) *cobra.Command {
 	}
 
 	cmd.Flags().StringVar(&options.name, "name", options.name, "Name override for the peer cluster")
+	cmd.Flags().BoolVar(&options.force, "force", options.force, "Try to attach the cluster even if it is already attached")
 
 	return cmd
 }
@@ -108,9 +110,11 @@ func (c *attachCommand) run(options *AttachOptions) error {
 		}
 	}
 
-	ok, _ := clusters.GetClusterByName(options.name)
-	if ok {
-		return errors.Errorf("peer cluster '%s' already exists", options.name)
+	if !options.force {
+		ok, _ := clusters.GetClusterByName(options.name)
+		if ok {
+			return errors.Errorf("peer cluster '%s' already exists", options.name)
+		}
 	}
 
 	ok, hostCluster := clusters.GetHostCluster()
