@@ -54,9 +54,9 @@ spec:
   pilot:
     enabled: false
     maxReplicas: 1
-    image: banzaicloud/istio-pilot:1.5.0-bzc
+    image: banzaicloud/istio-pilot:1.5.0-bzc.2
   proxy:
-    image: banzaicloud/istio-proxyv2:1.5.0-bzc.1
+    image: banzaicloud/istio-proxyv2:1.5.0-bzc.2
     useMetadataExchangeFilter: true
     envoyAccessLogService:
       enabled: true
@@ -70,7 +70,7 @@ spec:
         mode: ISTIO_MUTUAL
   mixer:
     maxReplicas: 1
-    image: banzaicloud/istio-mixer:1.5.0-bzc
+    image: banzaicloud/istio-mixer:1.5.0-bzc.2
     multiClusterSupport: true
   telemetry:
     enabled: false
