@@ -132,6 +132,24 @@ data:
       - source_labels: [__name__]
         regex: envoy_cluster_(lb|retry|bind|internal|max|original).*
         action: drop
+      - source_labels: [destination_service,destination_service_name]
+        separator: ;
+        regex: ^([A-Za-z0-9][-A-Za-z0-9_]*)\.([A-Za-z0-9][-A-Za-z0-9_]*).svc.cluster.local;([A-Za-z0-9][-A-Za-z0-9_]*).([A-Za-z0-9][-A-Za-z0-9_]*).svc.cluster.local
+        target_label: destination_service_name
+        replacement: $1
+        action: replace
+      - source_labels: [destination_service,destination_service_namespace]
+        separator: ;
+        regex: ^([A-Za-z0-9][-A-Za-z0-9_]*)\.([A-Za-z0-9][-A-Za-z0-9_]*).svc.cluster.local;unknown
+        target_label: destination_service_namespace
+        replacement: $2
+        action: replace
+      - source_labels: [destination_service,destination_service_namespace,source_workload_namespace]
+        separator: ;
+        regex: ^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9]);unknown;(.*)$
+        target_label: destination_service_namespace
+        replacement: $4
+        action: replace
     - job_name: kube-state-metrics
       scrape_interval: 1s
       kubernetes_sd_configs:
@@ -331,7 +349,7 @@ data:
         replacement: $1
         action: replace
     - job_name: 'federate'
-      scrape_interval: 15s
+      scrape_interval: 5s
       honor_labels: true
       metrics_path: '/prometheus/federate'
       kubernetes_sd_configs:

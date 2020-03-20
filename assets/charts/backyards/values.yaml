@@ -49,7 +49,7 @@ application:
   enabled: true
   image:
     repository: banzaicloud/backyards
-    tag: 1.2.0-rc.0
+    tag: 1.2.0
     pullPolicy: Always
 
   env: {}
@@ -65,7 +65,7 @@ web:
   enabled: false
   image:
     repository: banzaicloud/backyards-web
-    tag: 1.2.0-rc.0
+    tag: 1.2.0
     pullPolicy: Always
 
   env: {}
