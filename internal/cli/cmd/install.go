@@ -345,7 +345,7 @@ func (c *installCommand) validate(options *InstallOptions) error {
 	if !istioExists {
 		combinedErr = errors.Combine(combinedErr,
 			errors.Errorf("could not find Istio sidecar injector in '%s' namespace, "+
-				"use the --install-istio flag", options.istioNamespace))
+				"run 'backyards istio install' first", options.istioNamespace))
 	}
 	if istioExists && !istioHealthy {
 		combinedErr = errors.Combine(combinedErr,
