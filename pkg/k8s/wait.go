@@ -138,7 +138,7 @@ func waitForResourceConditions(client k8sclient.Client, object *unstructured.Uns
 
 	if err != nil {
 		if err == wait.ErrWaitTimeout {
-			log.Errorf("%s: For a potential solution, check out the docs: %s", err.Error(), "https://banzaicloud.com/docs/backyards/faq/#timed-out-waiting")
+			log.Errorf("%s: For a potential solution, check out the docs: %s", err.Error(), "https://banzaicloud.com/docs/backyards/troubleshooting/error-messages/#timed-out-waiting")
 		}
 		return err
 	}
