@@ -29,6 +29,7 @@ import (
 	"github.com/banzaicloud/backyards-cli/internal/cli/cmd/util"
 	"github.com/banzaicloud/backyards-cli/pkg/cli"
 	"github.com/banzaicloud/backyards-cli/pkg/graphql"
+	pkgutil "github.com/banzaicloud/backyards-cli/pkg/util"
 )
 
 const (
@@ -117,7 +118,7 @@ func isAutoMTLSEnabled(cli cli.CLI) bool {
 		panic(err)
 	}
 
-	return istioCR.Spec.AutoMTLS
+	return pkgutil.PointerToBool(istioCR.Spec.AutoMTLS)
 }
 
 func getMesh(cli cli.CLI, options *mTLSOptions, client graphql.Client) error {
