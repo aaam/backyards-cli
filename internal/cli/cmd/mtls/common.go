@@ -29,7 +29,6 @@ import (
 	"github.com/banzaicloud/backyards-cli/internal/cli/cmd/util"
 	"github.com/banzaicloud/backyards-cli/pkg/cli"
 	"github.com/banzaicloud/backyards-cli/pkg/graphql"
-	pkgutil "github.com/banzaicloud/backyards-cli/pkg/util"
 )
 
 const (
