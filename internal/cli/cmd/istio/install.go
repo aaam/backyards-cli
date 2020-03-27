@@ -309,6 +309,9 @@ func (c *installCommand) getIstioDeploymentsToWaitFor() []k8s.NamespacedNameWith
 			deploymentNames = append(deploymentNames, "istio-egressgateway")
 		}
 	}
+	if util.PointerToBool(istioCR.Spec.Istiod.Enabled) {
+		deploymentNames = append(deploymentNames, "istiod")
+	}
 
 	deployments := make([]k8s.NamespacedNameWithGVK, len(deploymentNames))
 	for i, name := range deploymentNames {
