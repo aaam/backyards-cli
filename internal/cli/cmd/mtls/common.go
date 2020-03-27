@@ -118,7 +118,11 @@ func isAutoMTLSEnabled(cli cli.CLI) bool {
 		panic(err)
 	}
 
-	return pkgutil.PointerToBool(istioCR.Spec.AutoMTLS)
+	if istioCR.Spec.AutoMTLS == nil {
+		return true
+	}
+
+	return *istioCR.Spec.AutoMTLS
 }
 
 func getMesh(cli cli.CLI, options *mTLSOptions, client graphql.Client) error {
