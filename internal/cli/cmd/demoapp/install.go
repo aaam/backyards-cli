@@ -24,6 +24,7 @@ import (
 	"github.com/spf13/cobra"
 	"istio.io/operator/pkg/object"
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/yaml"
@@ -182,6 +183,16 @@ func getBackyardsDemoObjects(namespace string, peerCluster bool, enabledServices
 	values.UseNamespaceResource = true
 	if peerCluster {
 		values.IstioResources = false
+	}
+	values.Resources = v1.ResourceRequirements{
+		Requests: v1.ResourceList{
+			v1.ResourceCPU:    resource.MustParse("50m"),
+			v1.ResourceMemory: resource.MustParse("64Mi"),
+		},
+		Limits: v1.ResourceList{
+			v1.ResourceCPU:    resource.MustParse("1000m"),
+			v1.ResourceMemory: resource.MustParse("64Mi"),
+		},
 	}
 	setEnabledServices(&values, enabledServices)
 
