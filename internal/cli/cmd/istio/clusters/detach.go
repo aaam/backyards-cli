@@ -141,6 +141,7 @@ func (c *detachCommand) removePrometheusFederationService(clusterName string) er
 	}
 
 	for _, svc := range services.Items {
+		svc := svc
 		err = k8sclient.Delete(context.Background(), &svc)
 		if err != nil {
 			return err
