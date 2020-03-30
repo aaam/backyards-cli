@@ -15,6 +15,7 @@
 package clusters
 
 import (
+	"context"
 	"fmt"
 
 	"emperror.dev/errors"
@@ -22,6 +23,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"istio.io/operator/pkg/object"
+	corev1 "k8s.io/api/core/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	cmdCommon "github.com/banzaicloud/backyards-cli/internal/cli/cmd/common"
 	"github.com/banzaicloud/backyards-cli/pkg/cli"
@@ -117,8 +120,34 @@ func (c *detachCommand) run(options *DetachOptions) error {
 			log.Infof("detaching peer cluster '%s' started successfully\n", options.name)
 		}
 
+		err = c.removePrometheusFederationService(peerCluster.Name)
+
 		return c.removeNamespaces(k8sclient, namespacesOnPeerCluster)
 	})
+}
+
+func (c *detachCommand) removePrometheusFederationService(clusterName string) error {
+	k8sclient, err := c.cli.GetK8sClient()
+	if err != nil {
+		return err
+	}
+
+	var services corev1.ServiceList
+	err = k8sclient.List(context.Background(), &services, client.MatchingLabels(map[string]string{
+		"backyards.banzaicloud.io/cluster-name": clusterName,
+	}))
+	if err != nil {
+		return err
+	}
+
+	for _, svc := range services.Items {
+		err = k8sclient.Delete(context.Background(), &svc)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (c *detachCommand) removeNamespaces(client k8sclient.Client, namespace []string) error {

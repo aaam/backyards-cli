@@ -203,6 +203,7 @@ func (c *attachCommand) installMonitoring(client k8sclient.Client, options *Atta
 
 	m.Install()
 
+	var service *object.K8sObject
 	for _, r := range m.Resources() {
 		if r.GroupVersionKind().GroupKind().Kind != "Service" {
 			continue
@@ -211,10 +212,18 @@ func (c *attachCommand) installMonitoring(client k8sclient.Client, options *Atta
 		if labels["backyards.banzaicloud.io/federated-prometheus"] != "true" {
 			continue
 		}
+		service = r
 		err = k8s.ApplyResources(masterClient, labelManager, object.K8sObjects([]*object.K8sObject{r}))
 		if err != nil {
 			return err
 		}
+		break
+	}
+
+	if service != nil {
+		labels := service.UnstructuredObject().GetLabels()
+		labels["backyards.banzaicloud.io/federated-prometheus"] = "false"
+		service.AddLabels(labels)
 	}
 
 	m.Install().Resources()
