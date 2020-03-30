@@ -3,7 +3,7 @@ kind: Istio
 metadata:
   name: mesh
 spec:
-  version: "1.5.0"
+  version: "1.5.1"
   meshPolicy:
     mtlsMode: PERMISSIVE
   autoMtls: true
@@ -16,6 +16,7 @@ spec:
     - name: ISTIO_METAJSON_PLATFORM_METADATA
       value: |
         {"PLATFORM_METADATA":{"cluster_id":"master"}}
+    image: banzaicloud/istio-sidecar-injector:1.5.1-bzc.1
   imagePullPolicy: Always
   citadel:
     enabled: false
@@ -54,9 +55,9 @@ spec:
   pilot:
     enabled: false
     maxReplicas: 1
-    image: banzaicloud/istio-pilot:1.5.0-bzc.2
+    image: banzaicloud/istio-pilot:1.5.1-bzc.1
   proxy:
-    image: banzaicloud/istio-proxyv2:1.5.0-bzc.2
+    image: banzaicloud/istio-proxyv2:1.5.1-bzc.1
     useMetadataExchangeFilter: true
     envoyAccessLogService:
       enabled: true
@@ -69,8 +70,9 @@ spec:
       tlsSettings:
         mode: ISTIO_MUTUAL
   mixer:
+    enabled: false
     maxReplicas: 1
-    image: banzaicloud/istio-mixer:1.5.0-bzc.2
+    image: banzaicloud/istio-mixer:1.5.1-bzc.1
     multiClusterSupport: true
   telemetry:
     enabled: false
@@ -87,6 +89,7 @@ spec:
         mode: ISTIO_MUTUAL
   istiod:
     enabled: true
+    multiClusterSupport: true
   jwtPolicy: first-party-jwt
   mixerlessTelemetry:
     enabled: true
