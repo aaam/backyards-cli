@@ -1,0 +1,23 @@
+name: Create pull request from release branch to master
+on:
+  push:
+    branches:
+      - release-*
+jobs:
+  create_pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@v2
+      - name: Checkout master branch to current release branch
+        run: git checkout -B master
+      - name: Extract release branch name
+        id: extract_release_branch_name
+        run: echo ::set-output name=branch::"${GITHUB_REF#refs/heads/}"
+      - name: Create Pull Request
+        uses: banzaicloud/create-pull-request@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: Add changes from ${{ steps.extract_release_branch_name.outputs.branch }} branch to master
+          branch: create-pull-request/from-${{ steps.extract_release_branch_name.outputs.branch }}-to-master
+          branch-suffix: short-commit-hash
