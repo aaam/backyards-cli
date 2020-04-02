@@ -20,4 +20,3 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: Add changes from ${{ steps.extract_release_branch_name.outputs.branch }} branch to master
           branch: create-pull-request/from-${{ steps.extract_release_branch_name.outputs.branch }}-to-master
-          branch-suffix: short-commit-hash
