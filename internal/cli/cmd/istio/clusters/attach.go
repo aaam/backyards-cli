@@ -209,9 +209,11 @@ func (c *attachCommand) installMonitoring(client k8sclient.Client, options *Atta
 			continue
 		}
 		labels := r.UnstructuredObject().GetLabels()
-		if labels["backyards.banzaicloud.io/federated-prometheus"] != "true" {
+		if labels["app.kubernetes.io/component"] != "prometheus" {
 			continue
 		}
+		labels["backyards.banzaicloud.io/federated-prometheus"] = "true"
+		r.AddLabels(labels)
 		service = r
 		err = k8s.ApplyResources(masterClient, labelManager, object.K8sObjects([]*object.K8sObject{r}))
 		if err != nil {

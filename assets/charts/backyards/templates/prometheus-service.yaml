@@ -18,9 +18,6 @@ metadata:
     app.kubernetes.io/component: prometheus
     app.kubernetes.io/part-of: {{ include "backyards.name" . }}
     backyards.banzaicloud.io/cluster-name: {{ .Values.prometheus.clusterName }}
-    {{- if ne .Values.prometheus.clusterName "master" }}
-    backyards.banzaicloud.io/federated-prometheus: "true"
-    {{- end }}
 spec:
   type: {{ .Values.prometheus.service.type }}
   selector:

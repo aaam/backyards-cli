@@ -16,7 +16,7 @@ spec:
     - name: ISTIO_METAJSON_PLATFORM_METADATA
       value: |
         {"PLATFORM_METADATA":{"cluster_id":"master"}}
-    image: banzaicloud/istio-sidecar-injector:1.5.1-bzc.1
+    image: banzaicloud/istio-sidecar-injector:1.5.1-bzc.3
   imagePullPolicy: Always
   citadel:
     enabled: false
@@ -55,9 +55,9 @@ spec:
   pilot:
     enabled: false
     maxReplicas: 1
-    image: banzaicloud/istio-pilot:1.5.1-bzc.1
+    image: banzaicloud/istio-pilot:1.5.1-bzc.3
   proxy:
-    image: banzaicloud/istio-proxyv2:1.5.1-bzc.1
+    image: banzaicloud/istio-proxyv2:1.5.1-bzc.3
     useMetadataExchangeFilter: true
     envoyAccessLogService:
       enabled: true
@@ -72,7 +72,7 @@ spec:
   mixer:
     enabled: false
     maxReplicas: 1
-    image: banzaicloud/istio-mixer:1.5.1-bzc.1
+    image: banzaicloud/istio-mixer:1.5.1-bzc.3
     multiClusterSupport: true
   telemetry:
     enabled: false
